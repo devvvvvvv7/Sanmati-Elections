@@ -189,18 +189,20 @@
         <option>Anvesha Motwani</option>
         <option>Aartik Garg</option>
         <option>Gainell Garg</option>
+        <option>Nishtha Bansal</option>
       </select>
     </div>
     <div class="form-group">
-      <label for="houseChiefMinister">House Chief Minister</label>
-      <select id="houseChiefMinister">
-        <option value="">Vote for House Chief Minister</option>
+      <label for="homeChiefMinister">Home Chief Minister</label>
+      <select id="homeChiefMinister">
+        <option value="">Vote for Home Chief Minister</option>
         <option>Sanjana Pandey</option>
         <option>Swastik Chandak</option>
         <option>Yashi Khandelwal</option>
         <option>Vedang Yadav</option>
         <option>Vedika Talwar</option>
         <option>Lavisha Nahar</option>
+        <option>Gunit Naulkha</option>
       </select>
     </div>
     <button onclick="submitVote()">Submit Vote</button>
@@ -228,7 +230,7 @@
       const da = document.getElementById("disciplineAdvisor").value;
       const ca = document.getElementById("culturalAdvisor").value;
       const cm = document.getElementById("culturalMinister").value;
-      const hcm = document.getElementById("houseChiefMinister").value;
+      const hcm = document.getElementById("homeChiefMinister").value;
       const status = document.getElementById("status");
       if (!name || !cls || !sec || !da || !ca || !cm || !hcm) {
         status.innerText = "Please fill out all fields!";
@@ -250,7 +252,7 @@
               disciplineAdvisor: da,
               culturalAdvisor: ca,
               culturalMinister: cm,
-              houseChiefMinister: hcm
+              homeChiefMinister: hcm
             }
           });
           status.innerText = "✅ Vote submitted successfully!";
@@ -261,7 +263,7 @@
           document.getElementById("disciplineAdvisor").value = "";
           document.getElementById("culturalAdvisor").value = "";
           document.getElementById("culturalMinister").value = "";
-          document.getElementById("houseChiefMinister").value = "";
+          document.getElementById("homeChiefMinister").value = "";
         }
       });
     }
