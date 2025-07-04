@@ -288,8 +288,10 @@
             }
           }
           postDiv.innerHTML += `<p>Winner: ${winner || "No votes yet"} (${maxVotes || 0} votes)</p>`;
-          // Ensure button is always added
-          postDiv.innerHTML += `<button class="details" onclick="window.location.href='/Sanmati-Elections/details.html?post=${post}'">View Detailed Votes</button>`;
+          // Log the URL being generated
+          const detailsUrl = `/Sanmati-Elections/details.html?post=${post}`;
+          console.log(`Generating button for ${post} with URL: ${detailsUrl}`);
+          postDiv.innerHTML += `<button class="details" onclick="window.location.href='${detailsUrl}'">View Detailed Votes</button>`;
           resultDiv.appendChild(postDiv);
         });
       }, error => {
