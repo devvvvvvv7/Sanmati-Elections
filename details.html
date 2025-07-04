@@ -99,7 +99,7 @@
   </div>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4", // Ensure this matches your Firebase config
+      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
       authDomain: "evoting-18508.firebaseapp.com",
       projectId: "evoting-18508",
       storageBucket: "evoting-18508.firebasestorage.app",
@@ -110,7 +110,13 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
+    const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "homeChiefMinister"];
+    const candidates = {
+      disciplineAdvisor: ["Pratyaksh Kumar", "Pihu Gupta", "Ananya Jain", "Sonia Khan"],
+      culturalAdvisor: ["Kirtan Joshi", "Taniya Yadav", "Nayan Verma", "Vaishnavi Mishra", "Kanika Patidar"],
+      culturalMinister: ["Gainell Garg", "Samriddhi Chandak", "Anshika Khandelwal", "Anvesha Motwani", "Aartik Garg", "Nishtha Bansal"],
+      homeChiefMinister: ["Sanjana Pandey", "Swastik Chandak", "Yashi Khandelwal", "Vedang Yadav", "Vedika Talwar", "Lavisha Nahar", "Gunit Naulkha"]
+    };
 
     function loadDetailedVotes() {
       const urlParams = new URLSearchParams(window.location.search);
@@ -125,41 +131,37 @@
 
       db.ref("votes").once("value", snapshot => {
         const allVotes = snapshot.val() || {};
-        console.log("Retrieved votes:", allVotes); // Debug log
+        console.log("Retrieved votes:", allVotes);
         const voteCounts = {};
+        candidates[post].forEach(candidate => {
+          voteCounts[candidate] = 0;
+        });
 
         for (let uid in allVotes) {
           const vote = allVotes[uid].votes[post];
-          if (vote) {
-            voteCounts[vote] = (voteCounts[vote] || 0) + 1;
+          if (vote && candidates[post].includes(vote)) {
+            voteCounts[vote]++;
           }
         }
 
         const detailsDiv = document.getElementById("voteDetails");
         detailsDiv.innerHTML = `<h4>${post.replace(/([A-Z])/g, " $1")}</h4>`;
-        if (Object.keys(voteCounts).length === 0) {
-          detailsDiv.innerHTML += "<p>No votes recorded yet.</p>";
-          document.getElementById("status").innerText = "No votes available for this post.";
-          document.getElementById("status").classList.remove("success");
-        } else {
-          for (let candidate in voteCounts) {
-            detailsDiv.innerHTML += `<p>${candidate}: ${voteCounts[candidate]} vote(s)</p>`;
-          }
-          document.getElementById("status").innerText = "✅ Details loaded successfully!";
-          document.getElementById("status").classList.add("success");
-        }
+        candidates[post].forEach(candidate => {
+          detailsDiv.innerHTML += `<p>${candidate}: ${voteCounts[candidate]} vote(s)</p>`;
+        });
+        document.getElementById("status").innerText = "✅ Details loaded successfully!";
+        document.getElementById("status").classList.add("success");
       }, error => {
         document.getElementById("voteDetails").innerHTML = "<p>Error loading votes.</p>";
         document.getElementById("status").innerText = `Error: ${error.message}`;
         document.getElementById("status").classList.remove("success");
-        console.error("Firebase error:", error); // Debug log
+        console.error("Firebase error:", error);
       });
     }
 
-    // Delay authentication check to allow page load
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
-        console.log("Auth state changed, user:", user); // Debug log
+        console.log("Auth state changed, user:", user);
         if (!user) {
           console.log("No user authenticated, redirecting to admin.html");
           window.location.href = "/Sanmati-Elections/admin.html";
