@@ -232,7 +232,7 @@
     <button onclick="submitVote()">Submit Vote</button>
     <p id="status"></p>
     <div id="adminLink">
-      <a href="/Sanmati-Elections/admin.html">Admin Login</a>
+      <a href="admin.html">Admin Login</a>
     </div>
   </div>
 
@@ -288,7 +288,6 @@
           status.innerText = "✅ Vote submitted successfully!";
           status.classList.remove("error");
 
-          // Clear all form fields after successful submission
           document.getElementById("name").value = "";
           document.getElementById("class").value = "";
           document.getElementById("section").value = "";
