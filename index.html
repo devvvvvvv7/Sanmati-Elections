@@ -13,7 +13,6 @@
       padding: 0;
       box-sizing: border-box;
     }
-
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #e0e7ff, #c3dafe);
@@ -23,7 +22,6 @@
       align-items: center;
       padding: 20px;
     }
-
     .container {
       background: #ffffff;
       border-radius: 15px;
@@ -33,7 +31,6 @@
       width: 100%;
       margin: 20px;
     }
-
     h2 {
       text-align: center;
       color: #1e40af;
@@ -45,16 +42,13 @@
       justify-content: center;
       gap: 10px;
     }
-
     h2 img {
       width: 40px;
       height: 40px;
     }
-
     .form-group {
       margin-bottom: 20px;
     }
-
     label {
       display: block;
       font-size: 0.9rem;
@@ -62,7 +56,6 @@
       color: #1f2937;
       margin-bottom: 8px;
     }
-
     input,
     select {
       width: 100%;
@@ -74,14 +67,12 @@
       background: #f9fafb;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
-
     input:focus,
     select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
-
     button {
       width: 100%;
       padding: 14px;
@@ -94,16 +85,13 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
-
     button:hover {
       background: #2563eb;
       transform: translateY(-2px);
     }
-
     button:active {
       transform: translateY(0);
     }
-
     #status {
       text-align: center;
       margin-top: 20px;
@@ -111,17 +99,14 @@
       font-weight: 500;
       color: #15803d;
     }
-
     #status.error {
       color: #dc2626;
     }
-
     #adminLink {
       display: none;
       text-align: center;
       margin-top: 20px;
     }
-
     #adminLink a {
       color: #3b82f6;
       text-decoration: none;
@@ -129,25 +114,14 @@
       font-size: 1rem;
       transition: color 0.3s;
     }
-
     #adminLink a:hover {
       color: #2563eb;
       text-decoration: underline;
     }
-
     @media (max-width: 480px) {
-      .container {
-        padding: 20px;
-      }
-
-      h2 {
-        font-size: 1.5rem;
-      }
-
-      button {
-        font-size: 1rem;
-        padding: 12px;
-      }
+      .container { padding: 20px; }
+      h2 { font-size: 1.5rem; }
+      button { font-size: 1rem; padding: 12px; }
     }
   </style>
 </head>
@@ -232,10 +206,9 @@
     <button onclick="submitVote()">Submit Vote</button>
     <p id="status"></p>
     <div id="adminLink">
-      <a href="admin.html">Admin Login</a>
+      <a href="/Sanmati-Elections/admin.html">Admin Login</a>
     </div>
   </div>
-
   <script>
     const firebaseConfig = {
       apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
@@ -246,10 +219,8 @@
       appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
       measurementId: "G-1X694LQTR0"
     };
-
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
     function submitVote() {
       const name = document.getElementById("name").value.trim();
       const cls = document.getElementById("class").value;
@@ -259,16 +230,13 @@
       const cm = document.getElementById("culturalMinister").value;
       const hcm = document.getElementById("houseChiefMinister").value;
       const status = document.getElementById("status");
-
       if (!name || !cls || !sec || !da || !ca || !cm || !hcm) {
         status.innerText = "Please fill out all fields!";
         status.classList.add("error");
         return;
       }
-
       const uid = name + "_" + cls + sec;
       const voteRef = db.ref("votes/" + uid);
-
       voteRef.once("value", snapshot => {
         if (snapshot.exists()) {
           status.innerText = "You have already voted.";
@@ -287,7 +255,6 @@
           });
           status.innerText = "✅ Vote submitted successfully!";
           status.classList.remove("error");
-
           document.getElementById("name").value = "";
           document.getElementById("class").value = "";
           document.getElementById("section").value = "";
@@ -298,17 +265,14 @@
         }
       });
     }
-
     let keysPressed = {};
     document.addEventListener('keydown', (event) => {
       keysPressed[event.key.toLowerCase()] = true;
-
       if (keysPressed['control'] && keysPressed['shift'] && keysPressed['a']) {
         document.getElementById('adminLink').style.display = 'block';
         keysPressed = {};
       }
     });
-
     document.addEventListener('keyup', (event) => {
       keysPressed[event.key.toLowerCase()] = false;
     });
