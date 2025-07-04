@@ -99,7 +99,7 @@
   </div>
   <script>
     const firebaseConfig = {
-      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4", // Replace with your actual API key if redacted
+      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4", // Ensure this matches your Firebase config
       authDomain: "evoting-18508.firebaseapp.com",
       projectId: "evoting-18508",
       storageBucket: "evoting-18508.firebasestorage.app",
@@ -156,15 +156,20 @@
       });
     }
 
+    // Delay authentication check to allow page load
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
+        console.log("Auth state changed, user:", user); // Debug log
         if (!user) {
-          console.log("User not authenticated, redirecting to admin.html");
+          console.log("No user authenticated, redirecting to admin.html");
           window.location.href = "/Sanmati-Elections/admin.html";
         } else {
           console.log("User authenticated, loading votes");
           loadDetailedVotes();
         }
+      }, error => {
+        console.error("Auth error:", error);
+        document.getElementById("status").innerText = `Auth Error: ${error.message}`;
       });
     });
   </script>
