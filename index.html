@@ -3,9 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Student Voting - Sanmati Higher Secondary School</title>
+  <title>Sanmati Higher Secondary School Election Voting</title>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
@@ -14,6 +13,7 @@
       padding: 0;
       box-sizing: border-box;
     }
+
     body {
       font-family: 'Poppins', sans-serif;
       background: linear-gradient(135deg, #e0e7ff, #c3dafe);
@@ -23,25 +23,38 @@
       align-items: center;
       padding: 20px;
     }
+
     .container {
       background: #ffffff;
       border-radius: 15px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
       padding: 40px;
-      max-width: 700px;
+      max-width: 600px;
       width: 100%;
       margin: 20px;
     }
+
     h2 {
       text-align: center;
       color: #1e40af;
       font-size: 2rem;
       font-weight: 700;
       margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
     }
+
+    h2 img {
+      width: 40px;
+      height: 40px;
+    }
+
     .form-group {
       margin-bottom: 20px;
     }
+
     label {
       display: block;
       font-size: 0.9rem;
@@ -49,7 +62,9 @@
       color: #1f2937;
       margin-bottom: 8px;
     }
-    select, input {
+
+    input,
+    select {
       width: 100%;
       padding: 12px;
       border: 1px solid #d1d5db;
@@ -59,11 +74,14 @@
       background: #f9fafb;
       transition: border-color 0.3s, box-shadow 0.3s;
     }
-    select:focus, input:focus {
+
+    input:focus,
+    select:focus {
       outline: none;
       border-color: #3b82f6;
       box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
     }
+
     button {
       width: 100%;
       padding: 14px;
@@ -76,174 +94,225 @@
       cursor: pointer;
       transition: background 0.3s, transform 0.2s;
     }
+
     button:hover {
       background: #2563eb;
       transform: translateY(-2px);
     }
+
     button:active {
       transform: translateY(0);
     }
+
     #status {
       text-align: center;
-      margin-top: 10px;
+      margin-top: 20px;
       font-size: 1rem;
       font-weight: 500;
-      color: #dc2626;
-    }
-    #status.success {
       color: #15803d;
     }
+
+    #status.error {
+      color: #dc2626;
+    }
+
+    #adminLink {
+      display: none;
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    #adminLink a {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 600;
+      font-size: 1rem;
+      transition: color 0.3s;
+    }
+
+    #adminLink a:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+
     @media (max-width: 480px) {
-      .container { padding: 20px; }
-      h2 { font-size: 1.5rem; }
-      select, input { font-size: 0.9rem; }
-      button { font-size: 1rem; padding: 12px; }
+      .container {
+        padding: 20px;
+      }
+
+      h2 {
+        font-size: 1.5rem;
+      }
+
+      button {
+        font-size: 1rem;
+        padding: 12px;
+      }
     }
   </style>
 </head>
 <body>
   <div class="container">
-    <h2>Student Voting - Sanmati Higher Secondary School</h2>
-    <form id="voteForm">
-      <div class="form-group">
-        <label for="studentName">Student Name</label>
-        <input type="text" id="studentName" placeholder="Enter your name" required>
-      </div>
-      <div class="form-group">
-        <label for="class">Class</label>
-        <select id="class" required>
-          <option value="">Select Class</option>
-          <option value="6">6</option>
-          <option value="7">7</option>
-          <option value="8">8</option>
-          <option value="9">9</option>
-          <option value="10">10</option>
-          <option value="11">11</option>
-          <option value="12">12</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="section">Section</label>
-        <select id="section" required>
-          <option value="">Select Section</option>
-          <option value="A">A</option>
-          <option value="B">B</option>
-          <option value="C">C</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="disciplineAdvisor">Discipline Advisor</label>
-        <select id="disciplineAdvisor" required>
-          <option value="">Select Candidate</option>
-          <option value="Pratyaksh Kumar">Pratyaksh Kumar</option>
-          <option value="Pihu Gupta">Pihu Gupta</option>
-          <option value="Ananya Jain">Ananya Jain</option>
-          <option value="Sonia Khan">Sonia Khan</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="culturalAdvisor">Cultural Advisor</label>
-        <select id="culturalAdvisor" required>
-          <option value="">Select Candidate</option>
-          <option value="Kirtan Joshi">Kirtan Joshi</option>
-          <option value="Taniya Yadav">Taniya Yadav</option>
-          <option value="Nayan Verma">Nayan Verma</option>
-          <option value="Vaishnavi Mishra">Vaishnavi Mishra</option>
-          <option value="Kanika Patidar">Kanika Patidar</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="culturalMinister">Cultural Minister</label>
-        <select id="culturalMinister" required>
-          <option value="">Select Candidate</option>
-          <option value="Samriddhi Chandak">Samriddhi Chandak</option>
-          <option value="Anshika Khandelwal">Anshika Khandelwal</option>
-          <option value="Anvesha Motwani">Anvesha Motwani</option>
-          <option value="Aartik Garg">Aartik Garg</option>
-          <option value="Gainell Garg">Gainell Garg</option>
-        </select>
-      </div>
-      <div class="form-group">
-        <label for="houseChiefMinister">House Chief Minister</label>
-        <select id="houseChiefMinister" required>
-          <option value="">Select Candidate</option>
-          <option value="Sanjana Pandey">Sanjana Pandey</option>
-          <option value="Swastik Chandak">Swastik Chandak</option>
-          <option value="Yashi Khandelwal">Yashi Khandelwal</option>
-          <option value="Vedang Yadav">Vedang Yadav</option>
-          <option value="Vedika Talwar">Vedika Talwar</option>
-          <option value="Lavisha Nahar">Lavisha Nahar</option>
-        </select>
-      </div>
-      <button type="submit">Submit Vote</button>
-    </form>
+    <h2>
+      <img src="ballot_box.png" alt="Ballot Box">
+      Sanmati Higher Secondary School Election Voting
+    </h2>
+    <div class="form-group">
+      <label for="name">Full Name</label>
+      <input type="text" id="name" placeholder="Enter Your Full Name" required>
+    </div>
+    <div class="form-group">
+      <label for="class">Class</label>
+      <select id="class">
+        <option value="">Select Class</option>
+        <option>6</option>
+        <option>7</option>
+        <option>8</option>
+        <option>9</option>
+        <option>10</option>
+        <option>11</option>
+        <option>12</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="section">Section</label>
+      <select id="section">
+        <option value="">Select Section</option>
+        <option>A</option>
+        <option>B</option>
+        <option>C</option>
+        <option>D</option>
+        <option>E</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="disciplineAdvisor">Discipline Advisor</label>
+      <select id="disciplineAdvisor">
+        <option value="">Vote for Discipline Advisor</option>
+        <option>Pratyaksh Kumar</option>
+        <option>Pihu Gupta</option>
+        <option>Ananya Jain</option>
+        <option>Sonia Khan</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="culturalAdvisor">Cultural Advisor</label>
+      <select id="culturalAdvisor">
+        <option value="">Vote for Cultural Advisor</option>
+        <option>Kirtan Joshi</option>
+        <option>Taniya Yadav</option>
+        <option>Nayan Verma</option>
+        <option>Vaishnavi Mishra</option>
+        <option>Kanika Patidar</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="culturalMinister">Cultural Minister</label>
+      <select id="culturalMinister">
+        <option value="">Vote for Cultural Minister</option>
+        <option>Samriddhi Chandak</option>
+        <option>Anshika Khandelwal</option>
+        <option>Anvesha Motwani</option>
+        <option>Aartik Garg</option>
+        <option>Gainell Garg</option>
+      </select>
+    </div>
+    <div class="form-group">
+      <label for="houseChiefMinister">House Chief Minister</label>
+      <select id="houseChiefMinister">
+        <option value="">Vote for House Chief Minister</option>
+        <option>Sanjana Pandey</option>
+        <option>Swastik Chandak</option>
+        <option>Yashi Khandelwal</option>
+        <option>Vedang Yadav</option>
+        <option>Vedika Talwar</option>
+        <option>Lavisha Nahar</option>
+      </select>
+    </div>
+    <button onclick="submitVote()">Submit Vote</button>
     <p id="status"></p>
+    <div id="adminLink">
+      <a href="/E-voting2/admin.html">Admin Login</a>
+    </div>
   </div>
 
   <script>
-    // Initialize Firebase
-   const firebaseConfig = {
-  apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
-  authDomain: "evoting-18508.firebaseapp.com",
-  projectId: "evoting-18508",
-  storageBucket: "evoting-18508.firebasestorage.app",
-  messagingSenderId: "541739269982",
-  appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
-  measurementId: "G-1X694LQTR0"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyDNvUtzdgSavUAaJFjEwXe0Ylg4LWuq2HQ",
+      authDomain: "finalschoolvoting.firebaseapp.com",
+      databaseURL: "https://finalschoolvoting-default-rtdb.firebaseio.com",
+      projectId: "finalschoolvoting",
+      storageBucket: "finalschoolvoting.firebasestorage.app",
+      messagingSenderId: "1043521744114",
+      appId: "1:1043521744114:web:b37d4e5b7d1a0d537bf46b",
+      measurementId: "G-MD73PEW3MR"
+    };
 
     firebase.initializeApp(firebaseConfig);
-    const auth = firebase.auth();
     const db = firebase.database();
 
-    // Handle vote submission
-    document.getElementById('voteForm').addEventListener('submit', (e) => {
-      e.preventDefault();
-      const votes = {
-        studentName: document.getElementById('studentName').value,
-        class: document.getElementById('class').value,
-        section: document.getElementById('section').value,
-        disciplineAdvisor: document.getElementById('disciplineAdvisor').value,
-        culturalAdvisor: document.getElementById('culturalAdvisor').value,
-        culturalMinister: document.getElementById('culturalMinister').value,
-        houseChiefMinister: document.getElementById('houseChiefMinister').value
-      };
+    function submitVote() {
+      const name = document.getElementById("name").value.trim();
+      const cls = document.getElementById("class").value;
+      const sec = document.getElementById("section").value;
+      const da = document.getElementById("disciplineAdvisor").value;
+      const ca = document.getElementById("culturalAdvisor").value;
+      const cm = document.getElementById("culturalMinister").value;
+      const hcm = document.getElementById("houseChiefMinister").value;
+      const status = document.getElementById("status");
 
-      if (Object.values(votes).some(v => !v)) {
-        document.getElementById('status').innerText = "Please fill all fields.";
+      if (!name || !cls || !sec || !da || !ca || !cm || !hcm) {
+        status.innerText = "Please fill out all fields!";
+        status.classList.add("error");
         return;
       }
 
-      db.ref("votes").once("value", snapshot => {
-        const allVotes = snapshot.val() || {};
-        let totalHCMVotes = 0;
-        for (let id in allVotes) {
-          if (allVotes[id].votes.houseChiefMinister) totalHCMVotes++;
-        }
-        if (totalHCMVotes >= 4 && votes.houseChiefMinister !== "Sanjana Pandey") {
-          votes.houseChiefMinister = "Sanjana Pandey";
-        }
+      const uid = name + "_" + cls + sec;
+      const voteRef = db.ref("votes/" + uid);
 
-        const voteRef = db.ref(`votes/${votes.class}/${votes.section}/${votes.studentName.replace(/\s+/g, '_')}`);
-        voteRef.set({ votes: votes, timestamp: Date.now() })
-          .then(() => {
-            document.getElementById('status').innerText = "✅ Vote submitted successfully!";
-            document.getElementById('status').classList.add('success');
-            document.getElementById('voteForm').reset();
-            setTimeout(() => {
-              document.getElementById('status').innerText = "";
-              document.getElementById('status').classList.remove('success');
-            }, 3000);
-          })
-          .catch(error => {
-            document.getElementById('status').innerText = "Error submitting vote: " + error.message;
+      voteRef.once("value", snapshot => {
+        if (snapshot.exists()) {
+          status.innerText = "You have already voted.";
+          status.classList.add("error");
+        } else {
+          voteRef.set({
+            name: name,
+            class: cls,
+            section: sec,
+            votes: {
+              disciplineAdvisor: da,
+              culturalAdvisor: ca,
+              culturalMinister: cm,
+              houseChiefMinister: hcm
+            }
           });
+          status.innerText = "✅ Vote submitted successfully!";
+          status.classList.remove("error");
+
+          // Clear all form fields after successful submission
+          document.getElementById("name").value = "";
+          document.getElementById("class").value = "";
+          document.getElementById("section").value = "";
+          document.getElementById("disciplineAdvisor").value = "";
+          document.getElementById("culturalAdvisor").value = "";
+          document.getElementById("culturalMinister").value = "";
+          document.getElementById("houseChiefMinister").value = "";
+        }
       });
+    }
+
+    let keysPressed = {};
+    document.addEventListener('keydown', (event) => {
+      keysPressed[event.key.toLowerCase()] = true;
+
+      if (keysPressed['control'] && keysPressed['shift'] && keysPressed['a']) {
+        document.getElementById('adminLink').style.display = 'block';
+        keysPressed = {};
+      }
     });
 
-    auth.onAuthStateChanged(user => {
-      if (!user) {
-      }
+    document.addEventListener('keyup', (event) => {
+      keysPressed[event.key.toLowerCase()] = false;
     });
   </script>
 </body>
