@@ -177,7 +177,7 @@
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
         if (!user) {
-          window.location.href = "/E-voting2/admin.html"; // Redirect to login if not authenticated
+          window.location.href = "/Sanmati-Elections/admin.html"; // Redirect to login if not authenticated
         } else {
           loadDetailedVotes();
         }
