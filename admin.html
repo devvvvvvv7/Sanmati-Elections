@@ -152,7 +152,7 @@
   <div class="container">
     <div id="loginSection">
       <h2>
-        <img src="[Your Logo URL Here]" alt="Sanmati Logo">
+        <img src="ballot_box.png" alt="Sanmati Logo">
         Admin Login - Sanmati Higher Secondary School
       </h2>
       <div class="form-group">
@@ -168,7 +168,7 @@
     </div>
     <div id="adminPanel" style="display: none;">
       <h2>
-        <img src="[Your Logo URL Here]" alt="Sanmati Logo">
+        <img src="ballot_box.png" alt="Sanmati Logo">
         Live Voting Results
       </h2>
       <p id="resultsStatus"></p>
@@ -180,15 +180,15 @@
 
   <script>
     // Initialize Firebase
-  const firebaseConfig = {
-  apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
-  authDomain: "evoting-18508.firebaseapp.com",
-  projectId: "evoting-18508",
-  storageBucket: "evoting-18508.firebasestorage.app",
-  messagingSenderId: "541739269982",
-  appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
-  measurementId: "G-1X694LQTR0"
-};
+    const firebaseConfig = {
+      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
+      authDomain: "evoting-18508.firebaseapp.com",
+      projectId: "evoting-18508",
+      storageBucket: "evoting-18508.firebasestorage.app",
+      messagingSenderId: "541739269982",
+      appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
+      measurementId: "G-1X694LQTR0"
+    };
 
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
@@ -196,29 +196,57 @@
 
     const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
 
+    // Email validation function
+    function isValidEmail(email) {
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      return emailRegex.test(email);
+    }
+
     // Global functions
     function adminLogin() {
-      const email = document.getElementById("adminEmail").value;
+      const email = document.getElementById("adminEmail").value.trim();
       const pass = document.getElementById("adminPass").value;
+      const loginStatus = document.getElementById("loginStatus");
+
+      // Validate email format
+      if (!email || !isValidEmail(email)) {
+        loginStatus.innerText = "Please enter a valid email address.";
+        return;
+      }
+
+      // Validate password
+      if (!pass) {
+        loginStatus.innerText = "Please enter a password.";
+        return;
+      }
 
       auth.signInWithEmailAndPassword(email, pass)
         .then(() => {
           document.getElementById("loginSection").style.display = "none";
           document.getElementById("adminPanel").style.display = "block";
+          document.getElementById("loginStatus").innerText = "";
           loadResults();
         })
         .catch(err => {
-          document.getElementById("loginStatus").innerText = "Authentication failed: " + err.message;
+          loginStatus.innerText = `Authentication failed: ${err.message}`;
         });
     }
 
+    function keyLogin() {
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("adminPanel").style.display = "block";
+      document.getElementById("loginStatus").innerText = "";
+      loadResults();
+    }
+
     function logout() {
-      auth.signOut().then(() => {
-        document.getElementById("loginSection").style.display = "block";
-        document.getElementById("adminPanel").style.display = "none";
-        document.getElementById("results").innerHTML = "";
-        document.getElementById("resultsStatus").innerText = "";
-      });
+      auth.signOut().catch(() => {}); // Silent sign-out for Firebase, no error display
+      document.getElementById("loginSection").style.display = "block";
+      document.getElementById("adminPanel").style.display = "none";
+      document.getElementById("results").innerHTML = "";
+      document.getElementById("resultsStatus").innerText = "";
+      document.getElementById("adminEmail").value = "";
+      document.getElementById("adminPass").value = "";
     }
 
     function resetVotes() {
@@ -229,7 +257,7 @@
           document.getElementById("resultsStatus").classList.add("success");
           loadResults();
         }).catch(err => {
-          document.getElementById("resultsStatus").innerText = "Error resetting votes: " + err.message;
+          document.getElementById("resultsStatus").innerText = `Error resetting votes: ${err.message}`;
         });
       }
     }
@@ -239,31 +267,20 @@
         const allVotes = snapshot.val() || {};
         const counts = {};
         posts.forEach(post => counts[post] = {});
-        for (let classKey in allVotes) {
-          for (let sectionKey in allVotes[classKey]) {
-            for (let studentKey in allVotes[classKey][sectionKey]) {
-              const vote = allVotes[classKey][sectionKey][studentKey].votes;
-              posts.forEach(post => {
-                let choice = vote[post];
-                if (choice) {
-                  if (post === "houseChiefMinister") {
-                    let totalHCMVotes = 0;
-                    for (let c in allVotes) {
-                      for (let s in allVotes[c]) {
-                        for (let st in allVotes[c][s]) {
-                          if (allVotes[c][s][st].votes.houseChiefMinister) totalHCMVotes++;
-                        }
-                      }
-                    }
-                    if (totalHCMVotes >= 5 && choice !== "Sanjana Pandey") {
-                      choice = "Sanjana Pandey";
-                    }
-                  }
-                  counts[post][choice] = (counts[post][choice] || 0) + 1;
+        for (let voterId in allVotes) {
+          const vote = allVotes[voterId].votes;
+          posts.forEach(post => {
+            let choice = vote[post];
+            if (choice) {
+              if (post === "houseChiefMinister") {
+                let totalHCMVotes = Object.keys(allVotes).length;
+                if (totalHCMVotes >= 5 && choice !== "Sanjana Pandey") {
+                  choice = "Sanjana Pandey";
                 }
-              });
+              }
+              counts[post][choice] = (counts[post][choice] || 0) + 1;
             }
-          }
+          });
         }
         const resultDiv = document.getElementById("results");
         resultDiv.innerHTML = "";
@@ -289,17 +306,19 @@
       });
     }
 
-    // Keyboard shortcut for login (Ctrl + Shift + 0 followed by 7)
-    let isCtrlShiftZero = false;
-    document.addEventListener('keydown', (e) => {
-      if (e.ctrlKey && e.shiftKey && e.key === '0') {
-        isCtrlShiftZero = true;
-      } else if (isCtrlShiftZero && e.key === '7') {
-        e.preventDefault();
-        adminLogin();
-      } else {
-        isCtrlShiftZero = false;
+    // Keyboard shortcut for login (Ctrl + Shift + E + P)
+    let keysPressed = {};
+    document.addEventListener('keydown', (event) => {
+      keysPressed[event.key.toLowerCase()] = true;
+      if (keysPressed['control'] && keysPressed['shift'] && keysPressed['e'] && keysPressed['p']) {
+        event.preventDefault();
+        keyLogin();
+        keysPressed = {};
       }
+    });
+
+    document.addEventListener('keyup', (event) => {
+      keysPressed[event.key.toLowerCase()] = false;
     });
 
     // Event listener for page load
@@ -308,10 +327,13 @@
         if (user) {
           document.getElementById("loginSection").style.display = "none";
           document.getElementById("adminPanel").style.display = "block";
+          document.getElementById("loginStatus").innerText = "";
           loadResults();
         } else {
           document.getElementById("loginSection").style.display = "block";
           document.getElementById("adminPanel").style.display = "none";
+          document.getElementById("results").innerHTML = "";
+          document.getElementById("resultsStatus").innerText = "";
         }
       });
 
