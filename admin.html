@@ -1,4 +1,4 @@
-d<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -137,7 +137,7 @@ d<!DOCTYPE html>
     }
     .post p {
       font-size: 1rem;
-      color: #1f2937;
+      color: #1f293719:02
       margin: 5px 0;
     }
     @media (max-width: 480px) {
@@ -168,7 +168,7 @@ d<!DOCTYPE html>
     </div>
     <div id="adminPanel" style="display: none;">
       <h2>
-        <img src="ballot_box.png" alt="Sanmati Logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShMvk58PfOhHr55_V-XRPYHM45sW4zFrsMOA&s" alt="Sanmati Logo">
         Live Voting Results
       </h2>
       <p id="resultsStatus"></p>
@@ -177,9 +177,7 @@ d<!DOCTYPE html>
       <button onclick="logout()">🚪 Logout</button>
     </div>
   </div>
-
   <script>
-    // Initialize Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
       authDomain: "evoting-18508.firebaseapp.com",
@@ -189,37 +187,26 @@ d<!DOCTYPE html>
       appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
       measurementId: "G-1X694LQTR0"
     };
-
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-
     const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
-
-    // Email validation function
     function isValidEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
       return emailRegex.test(email);
     }
-
-    // Global functions
     function adminLogin() {
       const email = document.getElementById("adminEmail").value.trim();
       const pass = document.getElementById("adminPass").value;
       const loginStatus = document.getElementById("loginStatus");
-
-      // Validate email format
       if (!email || !isValidEmail(email)) {
         loginStatus.innerText = "Please enter a valid email address.";
         return;
       }
-
-      // Validate password
       if (!pass) {
         loginStatus.innerText = "Please enter a password.";
         return;
       }
-
       auth.signInWithEmailAndPassword(email, pass)
         .then(() => {
           document.getElementById("loginSection").style.display = "none";
@@ -231,16 +218,14 @@ d<!DOCTYPE html>
           loginStatus.innerText = `Authentication failed: ${err.message}`;
         });
     }
-
     function keyLogin() {
       document.getElementById("loginSection").style.display = "none";
       document.getElementById("adminPanel").style.display = "block";
       document.getElementById("loginStatus").innerText = "";
       loadResults();
     }
-
     function logout() {
-      auth.signOut().catch(() => {}); // Silent sign-out for Firebase, no error display
+      auth.signOut().catch(() => {});
       document.getElementById("loginSection").style.display = "block";
       document.getElementById("adminPanel").style.display = "none";
       document.getElementById("results").innerHTML = "";
@@ -248,7 +233,6 @@ d<!DOCTYPE html>
       document.getElementById("adminEmail").value = "";
       document.getElementById("adminPass").value = "";
     }
-
     function resetVotes() {
       if (confirm("Are you sure you want to reset all votes? This cannot be undone.")) {
         db.ref("votes").remove().then(() => {
@@ -261,7 +245,6 @@ d<!DOCTYPE html>
         });
       }
     }
-
     function loadResults() {
       db.ref("votes").on("value", snapshot => {
         const allVotes = snapshot.val() || {};
@@ -270,14 +253,8 @@ d<!DOCTYPE html>
         for (let voterId in allVotes) {
           const vote = allVotes[voterId].votes;
           posts.forEach(post => {
-            let choice = vote[post];
+            const choice = vote[post];
             if (choice) {
-              if (post === "houseChiefMinister") {
-                let totalHCMVotes = Object.keys(allVotes).length;
-                if (totalHCMVotes >= 5 && choice !== "Sanjana Pandey") {
-                  choice = "Sanjana Pandey";
-                }
-              }
               counts[post][choice] = (counts[post][choice] || 0) + 1;
             }
           });
@@ -305,8 +282,6 @@ d<!DOCTYPE html>
         });
       });
     }
-
-    // Keyboard shortcut for login (Ctrl + Shift + E + P)
     let keysPressed = {};
     document.addEventListener('keydown', (event) => {
       keysPressed[event.key.toLowerCase()] = true;
@@ -316,12 +291,9 @@ d<!DOCTYPE html>
         keysPressed = {};
       }
     });
-
     document.addEventListener('keyup', (event) => {
       keysPressed[event.key.toLowerCase()] = false;
     });
-
-    // Event listener for page load
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
         if (user) {
@@ -336,7 +308,6 @@ d<!DOCTYPE html>
           document.getElementById("resultsStatus").innerText = "";
         }
       });
-
       document.getElementById("loginButton").addEventListener("click", adminLogin);
     });
   </script>
