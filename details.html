@@ -99,7 +99,7 @@
   </div>
   <script>
     const firebaseConfig = {
-      apiKey: "API_KEY",
+      apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4", // Replace with your actual API key if redacted
       authDomain: "evoting-18508.firebaseapp.com",
       projectId: "evoting-18508",
       storageBucket: "evoting-18508.firebasestorage.app",
@@ -111,6 +111,7 @@
     const auth = firebase.auth();
     const db = firebase.database();
     const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
+
     function loadDetailedVotes() {
       const urlParams = new URLSearchParams(window.location.search);
       const post = urlParams.get('post');
@@ -118,17 +119,22 @@
         document.getElementById("voteDetails").innerHTML = "<p>Invalid post selected.</p>";
         document.getElementById("status").innerText = "Error: Invalid post.";
         document.getElementById("status").classList.remove("success");
+        console.log("Invalid post:", post);
         return;
       }
+
       db.ref("votes").once("value", snapshot => {
         const allVotes = snapshot.val() || {};
+        console.log("Retrieved votes:", allVotes); // Debug log
         const voteCounts = {};
+
         for (let uid in allVotes) {
           const vote = allVotes[uid].votes[post];
           if (vote) {
             voteCounts[vote] = (voteCounts[vote] || 0) + 1;
           }
         }
+
         const detailsDiv = document.getElementById("voteDetails");
         detailsDiv.innerHTML = `<h4>${post.replace(/([A-Z])/g, " $1")}</h4>`;
         if (Object.keys(voteCounts).length === 0) {
@@ -146,13 +152,17 @@
         document.getElementById("voteDetails").innerHTML = "<p>Error loading votes.</p>";
         document.getElementById("status").innerText = `Error: ${error.message}`;
         document.getElementById("status").classList.remove("success");
+        console.error("Firebase error:", error); // Debug log
       });
     }
+
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
         if (!user) {
+          console.log("User not authenticated, redirecting to admin.html");
           window.location.href = "/Sanmati-Elections/admin.html";
         } else {
+          console.log("User authenticated, loading votes");
           loadDetailedVotes();
         }
       });
