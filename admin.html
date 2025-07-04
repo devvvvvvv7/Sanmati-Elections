@@ -168,7 +168,7 @@
     </div>
     <div id="adminPanel" style="display: none;">
       <h2>
-        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcShMvk58PfOhHr55_V-XRPYHM45sW4zFrsMOA&s" alt="Sanmati Logo">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn;&s" alt="Sanmati Logo">
         Live Voting Results
       </h2>
       <p id="resultsStatus"></p>
@@ -190,7 +190,7 @@
     firebase.initializeApp(firebaseConfig);
     const auth = firebase.auth();
     const db = firebase.database();
-    const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
+    const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "homeChiefMinister"];
 
     function isValidEmail(email) {
       const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -254,7 +254,7 @@
     function loadResults() {
       db.ref("votes").on("value", snapshot => {
         const allVotes = snapshot.val() || {};
-        console.log("All votes data:", allVotes); // Debug log
+        console.log("All votes data:", allVotes);
         const counts = {};
         posts.forEach(post => counts[post] = {});
 
@@ -267,7 +267,7 @@
             }
           });
         }
-        console.log("Vote counts:", counts); // Debug log
+        console.log("Vote counts:", counts);
 
         const resultDiv = document.getElementById("results");
         resultDiv.innerHTML = "";
@@ -288,7 +288,6 @@
             }
           }
           postDiv.innerHTML += `<p>Winner: ${winner || "No votes yet"} (${maxVotes || 0} votes)</p>`;
-          // Log the URL being generated
           const detailsUrl = `/Sanmati-Elections/details.html?post=${post}`;
           console.log(`Generating button for ${post} with URL: ${detailsUrl}`);
           postDiv.innerHTML += `<button class="details" onclick="window.location.href='${detailsUrl}'">View Detailed Votes</button>`;
@@ -296,7 +295,7 @@
         });
       }, error => {
         document.getElementById("resultsStatus").innerText = `Error loading results: ${error.message}`;
-        console.error("Firebase error:", error); // Debug log
+        console.error("Firebase error:", error);
       });
     }
 
