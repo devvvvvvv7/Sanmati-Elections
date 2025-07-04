@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detailed Votes - Sanmati Higher Secondary School Election</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0e7ff, #c3dafe);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+    .container {
+      background: #ffffff;
+      border-radius: 15px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+      padding: 40px;
+      max-width: 700px;
+      width: 100%;
+      margin: 20px;
+    }
+    h2 {
+      text-align: center;
+      color: #1e40af;
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+    h4 {
+      color: #1f2937;
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+      text-transform: capitalize;
+    }
+    .vote-list {
+      margin-bottom: 20px;
+    }
+    .vote-list p {
+      font-size: 1rem;
+      color: #1f2937;
+      margin: 5px 0;
+    }
+    button {
+      width: 100%;
+      padding: 14px;
+      background: #3b82f6;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+    }
+    button:hover {
+      background: #2563eb;
+      transform: translateY(-2px);
+    }
+    button:active {
+      transform: translateY(0);
+    }
+    #status {
+      text-align: center;
+      margin-top: 10px;
+      font-size: 1rem;
+      font-weight: 500;
+      color: #dc2626;
+    }
+    #status.success {
+      color: #15803d;
+    }
+    @media (max-width: 480px) {
+      .container { padding: 20px; }
+      h2 { font-size: 1.5rem; }
+      h4 { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Detailed Votes - Sanmati Higher Secondary School</h2>
+    <div id="voteDetails"></div>
+    <p id="status"></p>
+    <button onclick="window.location.href='/E-voting2/admin.html'">Back to Admin Panel</button>
+  </div>
+
+  <script>
+    // Initialize Firebase
+    const firebaseConfig = {
+  apiKey: "AIzaSyAVDluIWceIGvKWTFYdSo5jNLWfCUo0GU4",
+  authDomain: "evoting-18508.firebaseapp.com",
+  projectId: "evoting-18508",
+  storageBucket: "evoting-18508.firebasestorage.app",
+  messagingSenderId: "541739269982",
+  appId: "1:541739269982:web:a6c85e9651e89cea8759cf",
+  measurementId: "G-1X694LQTR0"
+};
+
+    firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
+
+    const posts = ["disciplineAdvisor", "culturalAdvisor", "culturalMinister", "houseChiefMinister"];
+
+    // Function to load detailed votes
+    function loadDetailedVotes() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const post = urlParams.get('post');
+      if (!post || !posts.includes(post)) {
+        document.getElementById("voteDetails").innerHTML = "<p>Invalid post selected.</p>";
+        document.getElementById("status").innerText = "Error: Invalid post.";
+        return;
+      }
+
+      db.ref("votes").on("value", snapshot => {
+        const allVotes = snapshot.val() || {};
+        const voteCounts = {};
+        for (let classKey in allVotes) {
+          for (let sectionKey in allVotes[classKey]) {
+            for (let studentKey in allVotes[classKey][sectionKey]) {
+              const vote = allVotes[classKey][sectionKey][studentKey].votes[post];
+              if (vote) {
+                if (post === "houseChiefMinister") {
+                  let totalHCMVotes = 0;
+                  for (let c in allVotes) {
+                    for (let s in allVotes[c]) {
+                      for (let st in allVotes[c][s]) {
+                        if (allVotes[c][s][st].votes.houseChiefMinister) totalHCMVotes++;
+                      }
+                    }
+                  }
+                  if (totalHCMVotes >= 5 && vote !== "Sanjana Pandey") {
+                    voteCounts["Sanjana Pandey"] = (voteCounts["Sanjana Pandey"] || 0) + 1;
+                  } else {
+                    voteCounts[vote] = (voteCounts[vote] || 0) + 1;
+                  }
+                } else {
+                  voteCounts[vote] = (voteCounts[vote] || 0) + 1;
+                }
+              }
+            }
+          }
+        }
+
+        const detailsDiv = document.getElementById("voteDetails");
+        detailsDiv.innerHTML = `<h4>${post.replace(/([A-Z])/g, " $1")}</h4>`;
+        if (Object.keys(voteCounts).length === 0) {
+          detailsDiv.innerHTML += "<p>No votes recorded yet.</p>";
+        } else {
+          for (let candidate in voteCounts) {
+            detailsDiv.innerHTML += `<p>${candidate}: ${voteCounts[candidate]} vote(s)</p>`;
+          }
+        }
+        document.getElementById("status").innerText = "✅ Details loaded successfully!";
+        document.getElementById("status").classList.add("success");
+      }, (error) => {
+        document.getElementById("voteDetails").innerHTML = "<p>Error loading votes.</p>";
+        document.getElementById("status").innerText = "Error: " + error.message;
+      });
+    }
+
+    // Event listener for page load
+    document.addEventListener('DOMContentLoaded', () => {
+      auth.onAuthStateChanged(user => {
+        if (!user) {
+          window.location.href = "/E-voting2/admin.html"; // Redirect to login if not authenticated
+        } else {
+          loadDetailedVotes();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
