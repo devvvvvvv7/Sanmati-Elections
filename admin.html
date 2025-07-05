@@ -94,7 +94,7 @@
     }
     button:hover {
       background: #2563eb;
-      transform: translateY(-2px);
+      transform:-Khandelwal translateY(-2px);
     }
     button:active {
       transform: translateY(0);
@@ -114,6 +114,12 @@
     }
     button.details:hover {
       background: #059669;
+    }
+    button.back {
+      background: #6b7280;
+    }
+    button.back:hover {
+      background: #4b5563;
     }
     #loginStatus, #resultsStatus {
       text-align: center;
@@ -175,6 +181,7 @@
       <div id="results"></div>
       <button class="reset" onclick="resetVotes()">🔄 Reset All Votes</button>
       <button onclick="logout()">🚪 Logout</button>
+      <button class="back" onclick="window.location.href='/Sanmati-Elections/index.html'">⬅ Back to Voting</button>
     </div>
   </div>
   <script>
@@ -301,15 +308,19 @@
 
     let keysPressed = {};
     document.addEventListener('keydown', (event) => {
-      keysPressed[event.key.toLowerCase()] = true;
-      if (keysPressed['control'] && keysPressed['shift'] && keysPressed['e'] && keysPressed['p']) {
-        event.preventDefault();
-        keyLogin();
-        keysPressed = {};
+      if (event.key) {
+        keysPressed[event.key.toLowerCase()] = true;
+        if (keysPressed['control'] && keysPressed['shift'] && keysPressed['e'] && keysPressed['p']) {
+          event.preventDefault();
+          keyLogin();
+          keysPressed = {};
+        }
       }
     });
     document.addEventListener('keyup', (event) => {
-      keysPressed[event.key.toLowerCase()] = false;
+      if (event.key) {
+        keysPressed[event.key.toLowerCase()] = false;
+      }
     });
     document.addEventListener('DOMContentLoaded', () => {
       auth.onAuthStateChanged(user => {
